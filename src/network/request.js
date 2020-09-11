@@ -4,7 +4,7 @@ export function request(config) {
   // 创建axios实例
   const instance = axios.create({
     timeout: 5000,
-    baseURL: 'http://123.207.32.32:8000'
+    baseURL: '***'
   })
 
   // 设置axios的拦截器
