@@ -7,7 +7,7 @@
     </slot>
     <div class="indicator">
       <slot name="indicator" v-if="showIndicator && slideCount > 1">
-        <div v-for="(item, index) in slideCount" class="indi-item" :class="{active: index === currentIndex-1}"
+        <div v-for="(item, index) in slideCount" class="indi-item" :class="{active: index === currentIndex - 1}"
              :key="index"></div>
       </slot>
     </div>
@@ -48,10 +48,18 @@
       // 1.操作DOM, 在前后添加Slide
       setTimeout(() => {
         this.handleDom();
-
         // 2.开启定时器
         this.startTimer();
-      }, 100)
+      }, 300)
+      // 若给一个很短的时间(100ms),可能此时插槽中有内容填充,Virtual DOM正在重新渲染(Updating),
+      // 此时去调用handleDom()方法,执行到给this.slideCount重新赋值(还想要update)时,
+      // 可能就不奏效了,也就直接导致判为只有一张图,从而引起没有开启轮播和下方indicator的渲染
+    },
+    beforeUpdate() {
+      // console.log('before update')
+    },
+    updated() {
+      // console.log('updated')
     },
     methods: {
       /**
@@ -121,10 +129,10 @@
         // 1.获取要操作的元素
         let swiperEl = document.querySelector('.swiper');
         let slidesEls = swiperEl.getElementsByClassName('slide');
-
+        // console.log(slidesEls)
         // 2.保存个数
         this.slideCount = slidesEls.length;
-
+        // console.log(this.slideCount)
         // 3.如果大于1个, 那么在前后分别添加一个slide
         if (this.slideCount > 1) {
           let cloneFirst = slidesEls[0].cloneNode(true);

@@ -46,6 +46,9 @@
   import {getHomeMultiData, getHomeGoods} from "../../network/home.js";
   import {debounce} from "../../common/utils.js";
 
+  // mixin
+  import {itemListenerMixin, backTopMixin} from "../../common/mixin";
+
   export default {
     name: "Home",
     components: {
@@ -68,13 +71,13 @@
           'sell': {page: 0, list: []},
         },
         currentType: 'pop',
-        backTopIsShown: false,
         isTabFixed: false,
         tabOffsetTop: 0,
         // 离开时保存的位置
         saveY: 0
       }
     },
+    mixins: [itemListenerMixin, backTopMixin],
     computed: {
       showGoods() {
         return this.goods[this.currentType].list;
@@ -88,20 +91,17 @@
       this.getHomeGoods('new');
       this.getHomeGoods('sell');
     },
-    mounted() {  // *** 特别注意：访问子组件/子元素必须等待挂载完成，尽管是在回调中写的(但万一很快呢) ***
-      // 3.监听item中图片加载完成
-      const refresh = debounce(this.$refs.scroll.refresh, 50);
-      this.$bus.$on('itemImageLoaded', () => {
-        // this.$refs.scroll.refresh();
-        refresh()  // 刷新过于频繁，需要防抖函数
-      });
-    },
+    // mixin scope
+    mounted() {},  // *** 特别注意：访问子组件/子元素必须等待挂载完成，尽管是在回调中写的(但万一很快呢) ***
     activated() {
       this.$refs.scroll.scrollTo(0, this.saveY, 0);
       this.$refs.scroll.refresh();
     },
     deactivated() {
+      // 1. 保存滚动Y值
       this.saveY = this.$refs.scroll.getScrollY();
+      // 2. 取消全局事件的监听
+      this.$bus.$off('itemImageLoaded', this.itemImgListener);
     },
     methods: {
       /**
@@ -121,10 +121,6 @@
         }
         this.$refs.tabControl1.currentIndex = index
         this.$refs.tabControl2.currentIndex = index
-      },
-      backClicked() {
-        // 通过$refs取到子组件Scroll中的scrollTo方法，500ms内回到顶部
-        this.$refs.scroll.scrollTo(0, 0, 500);
       },
       contentScrolled(position) {
         // 1. 判断BackTop是否显示
