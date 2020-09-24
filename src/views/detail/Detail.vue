@@ -127,16 +127,17 @@
         this.backTopIsShown = positionY >= 1000;
       },
       addToCart() {
-        // 获取购物车需要展示的信息
+        // 1.获取购物车需要展示的信息
         const product = {};
         product.image = this.topImages[0];
         product.title = this.goods.title;
         product.desc = this.goods.desc;
         product.price = this.goods.realPrice;
         product.iid = this.iid;
-        console.log(product)
-        // 2.将商品添加到购物车中
-        
+        // 2.将商品添加到购物车中，vuex的actions操作完成后可返回Promise
+        this.$store.dispatch('addToCart', product).then(res => {
+          this.$toast.show(res, 2000);
+        });
       }
     }
   }
