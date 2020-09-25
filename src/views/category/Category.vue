@@ -1,150 +1,117 @@
 <template>
-  <div>
-    <p>{{curScrollPos}}</p>
-    <div class="wrapper" ref="scrollWrapper">
-      <ul class="content">
-        <li>列表项1</li>
-        <li>列表项2</li>
-        <li>列表项3</li>
-        <li>列表项4</li>
-        <li>列表项5</li>
-        <li>列表项6</li>
-        <li>列表项7</li>
-        <li>列表项8</li>
-        <li>列表项9</li>
-        <li>列表项10</li>
-        <li>列表项11</li>
-        <li>列表项12</li>
-        <li>列表项13</li>
-        <li>列表项14</li>
-        <li>列表项15</li>
-        <li>列表项16</li>
-        <li>列表项17</li>
-        <li>列表项18</li>
-        <li>列表项19</li>
-        <li>列表项20</li>
-        <li>列表项21</li>
-        <li>列表项22</li>
-        <li>列表项23</li>
-        <li>列表项24</li>
-        <li>列表项25</li>
-        <li>列表项26</li>
-        <li>列表项27</li>
-        <li>列表项28</li>
-        <li>列表项29</li>
-        <li>列表项30</li>
-        <li>列表项31</li>
-        <li>列表项32</li>
-        <li>列表项33</li>
-        <li>列表项34</li>
-        <li>列表项35</li>
-        <li>列表项36</li>
-        <li>列表项37</li>
-        <li>列表项38</li>
-        <li>列表项39</li>
-        <li>列表项40</li>
-        <li>列表项41</li>
-        <li>列表项42</li>
-        <li>列表项43</li>
-        <li>列表项44</li>
-        <li>列表项45</li>
-        <li>列表项46</li>
-        <li>列表项47</li>
-        <li>列表项48</li>
-        <li>列表项49</li>
-        <li>列表项50</li>
-        <li>列表项51</li>
-        <li>列表项52</li>
-        <li>列表项53</li>
-        <li>列表项54</li>
-        <li>列表项55</li>
-        <li>列表项56</li>
-        <li>列表项57</li>
-        <li>列表项58</li>
-        <li>列表项59</li>
-        <li>列表项60</li>
-        <li>列表项61</li>
-        <li>列表项62</li>
-        <li>列表项63</li>
-        <li>列表项64</li>
-        <li>列表项65</li>
-        <li>列表项66</li>
-        <li>列表项67</li>
-        <li>列表项68</li>
-        <li>列表项69</li>
-        <li>列表项70</li>
-        <li>列表项71</li>
-        <li>列表项72</li>
-        <li>列表项73</li>
-        <li>列表项74</li>
-        <li>列表项75</li>
-        <li>列表项76</li>
-        <li>列表项77</li>
-        <li>列表项78</li>
-        <li>列表项79</li>
-        <li>列表项80</li>
-        <li>列表项81</li>
-        <li>列表项82</li>
-        <li>列表项83</li>
-        <li>列表项84</li>
-        <li>列表项85</li>
-        <li>列表项86</li>
-        <li>列表项87</li>
-        <li>列表项88</li>
-        <li>列表项89</li>
-        <li>列表项90</li>
-        <li>列表项91</li>
-        <li>列表项92</li>
-        <li>列表项93</li>
-        <li>列表项94</li>
-        <li>列表项95</li>
-        <li>列表项96</li>
-        <li>列表项97</li>
-        <li>列表项98</li>
-        <li>列表项99</li>
-        <li>列表项100</li>
-      </ul>
-    </div>
+  <div class="category">
+    <nav-bar class="category-nav-bar">
+      <div slot="center">商品分类</div>
+    </nav-bar>
+    <slide-bar :slide-bar-list="categoryList" @slideBarItemClicked="slideBarItemClicked"/>
+    <scroll class="scroll-height" ref="scroll">
+      <sub-category :sub-category-list="subCategoryList"/>
+      <tab-control :titles="titleList" @tabClicked="tabClicked" ref="tabControl"/>
+      <goods-list :goods="categoryDetailList"/>
+    </scroll>
   </div>
 </template>
 
 <script>
-  import BScroll from 'better-scroll';
+  // common cpn
+  import NavBar from "../../components/common/navbar/NavBar";
+  import Scroll from "../../components/common/scroll/Scroll";
+  import TabControl from "../../components/content/tabControl/TabControl";
+  import GoodsList from "../../components/content/goods/GoodsList";
+
+  // sub cpn
+  import SlideBar from "./childCpn/SlideBar";
+  import SubCategory from "./childCpn/SubCategory";
+
+  // fn
+  import {getCategory, getSubCategory, getCategoryDetail} from "../../network/category";
+
+  // mixin
+  import {itemListenerMixin} from "../../common/mixin";
 
   export default {
     name: "Category",
+    components: {
+      NavBar,
+      Scroll,
+      TabControl,
+      GoodsList,
+      SlideBar,
+      SubCategory
+    },
+    mixins: [itemListenerMixin],
     data() {
       return {
-        scroll: null,
-        curScrollPos: {}
+        // 分类侧边栏数据
+        categoryList: [],
+        titleList: ['流行', '新款', '精选'],
+        currIndex: 0,
+        // 侧边栏右侧分类数据
+        subCategoryList: [],
+        categoryDetailList: []
       }
     },
-    mounted() {  // *** 注意一定不可在created()钩子函数中获取本组件中的元素 ***
-      // probe:侦测
-      // probeType:0或1=>不侦测
-      // probeType:2=>在手指滚动的过程中侦测，手指离开后的惯性滚动过程中不侦测
-      // probeType:3=>只要是滚动，都进行侦测
-      this.scroll = new BScroll(document.querySelector('.wrapper'), {
-        probeType: 3,
-        pullUpLoad: true
-      });
-      this.scroll.on('scroll', position => {
-        this.curScrollPos = position;
-      });
-      this.scroll.on('pullingUp', () => {
-        console.log('上拉加载更多');
-        setTimeout(() => {
-          this.scroll.finishPullUp()
-        }, 2000);
-      });
+    methods: {
+      getCategory() {
+        getCategory().then(res => {
+          // console.log(res);
+          this.categoryList = res.data.category.list;
+          // 每次切换分类 初始化tabControl的索引
+          this.$refs.tabControl.currentIndex = 0;
+          // 下一帧延迟处理
+          this.$nextTick(() => {
+            this.getSubCategory(this.categoryList[0].maitKey)
+            this.getCategoryDetail(this.categoryList[0].miniWallkey, 'pop');
+          });
+        });
+      },
+      getSubCategory(key) {
+        getSubCategory(key).then(res => {
+          this.subCategoryList = [...res.data.list];
+        });
+      },
+      getCategoryDetail(key, type) {
+        getCategoryDetail(key, type).then(res => {
+          this.categoryDetailList = [...res];
+          console.log(this.categoryDetailList)
+        });
+      },
+      slideBarItemClicked({maitKey, index}) {
+        // 阻止反复请求
+        if (this.currIndex === index) return;
+        this.currIndex = index;
+        // 请求对应的子分类列表及推荐列表
+        this.getSubCategory(maitKey)
+        this.getCategoryDetail(this.categoryList[this.currIndex].miniWallkey, 'pop');
+      },
+      tabClicked(index) {
+        const typeList = ['pop', 'new', 'sell'];
+        // 切换数据展示类型
+        this.getCategoryDetail(this.categoryList[this.currIndex].miniWallkey, typeList[index])
+      }
+    },
+    created() {
+      this.getCategory()
+    },
+    deactivated() {
+      this.$bus.$off('itemImageLoaded', this.itemImgListener);
     }
   }
 </script>
 
 <style scoped>
-  .wrapper {
-    height: 200px;
-    background-color: pink;
+  .category-nav-bar {
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #ff8198;
+  }
+
+  .scroll-height {
+    position: fixed;
+    top: 44px;
+    bottom: 49px;
+    right: 0;
+    left: 100px;
     overflow: hidden;
   }
 </style>
