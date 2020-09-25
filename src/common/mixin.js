@@ -18,9 +18,9 @@ export const itemListenerMixin = {
     this.$bus.$on('itemImageLoaded', this.itemImgListener);
     // test
     // console.log('我是混入的内容')
-    setTimeout(() => {
-      this.$refs.scroll.refresh();
-    }, 1000);
+    // setTimeout(() => {
+    //   this.$refs.scroll.refresh();
+    // }, 1000);
   }
 }
 
