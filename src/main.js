@@ -14,7 +14,7 @@ Vue.config.productionTip = false
 Vue.prototype.$bus = new Vue();
 
 // 安装插件
-Vue.use(toast);
+Vue.use(toast);  // 会自动去执行toast/index.js中的install方法
 Vue.use(VueLazyload,{
   loading: require('./assets/img/common/placeholder.png')
 });
