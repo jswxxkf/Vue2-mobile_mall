@@ -4,7 +4,7 @@ export function request(config) {
   // 创建axios实例
   const instance = axios.create({
     timeout: 5000,
-    baseURL: '***'
+    baseURL: 'http://106.54.54.237:8000/api/mn'
   })
 
   // 设置axios的拦截器
@@ -21,4 +21,12 @@ export function request(config) {
   });
 
   return instance(config)  // return PromiseLike
+}
+
+export function request_(config) {
+  const instance = axios.create({
+    timeout: 5000,
+    baseURL: 'http://xkfwuxi.top:8080'
+  })
+  return instance(config);  // return PromiseLike
 }

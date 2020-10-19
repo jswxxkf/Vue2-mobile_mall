@@ -5,6 +5,8 @@ import store from './store'
 
 import fastClick from 'fastclick'
 import VueLazyload from "vue-lazyload";
+import ElementUI from "element-ui";
+import 'element-ui/lib/theme-chalk/index.css';
 
 import toast from './components/common/toast'
 
@@ -18,6 +20,7 @@ Vue.use(toast);  // 会自动去执行toast/index.js中的install方法
 Vue.use(VueLazyload,{
   loading: require('./assets/img/common/placeholder.png')
 });
+Vue.use(ElementUI);
 
 // 解决移动端300ms延迟
 fastClick.attach(document.body);

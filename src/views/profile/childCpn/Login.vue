@@ -4,7 +4,9 @@
       <img src="../../../assets/img/profile/avatar.svg" alt="">
     </div>
     <div class="user-info">
-      <p>登录 / 注册</p>
+      <span @click="toRegister">登录</span>
+      <span>|</span>
+      <span>注册</span>
       <div class="phone-num">
         <img src="../../../assets/img/profile/phone.svg" alt="">
         <p>暂未绑定手机号</p>
@@ -21,6 +23,11 @@
     name: "Login",
     data() {
       return {}
+    },
+    methods:{
+      toRegister(){
+        this.$router.push('/register')
+      }
     }
   }
 </script>
@@ -55,7 +62,11 @@
     margin-left: 20px;
   }
 
-  .user-info p:last-child {
+  .user-info span {
+    margin-right: 15px;
+  }
+
+  .user-info p {
     margin-left: 3px;
   }
 
