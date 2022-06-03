@@ -56,8 +56,6 @@
         getCategory().then(res => {
           // console.log(res);
           this.categoryList = res.data.category.list;
-          // 每次切换分类 初始化tabControl的索引
-          this.$refs.tabControl.currentIndex = 0;
           // 下一帧延迟处理
           this.$nextTick(() => {
             this.getSubCategory(this.categoryList[0].maitKey)
@@ -73,7 +71,6 @@
       getCategoryDetail(key, type) {
         getCategoryDetail(key, type).then(res => {
           this.categoryDetailList = [...res];
-          console.log(this.categoryDetailList)
         });
       },
       slideBarItemClicked({maitKey, index}) {
@@ -82,7 +79,11 @@
         this.currIndex = index;
         // 请求对应的子分类列表及推荐列表
         this.getSubCategory(maitKey)
+        // 每次切换分类 初始化tabControl的索引
+        this.$refs.tabControl.currentIndex = 0;
         this.getCategoryDetail(this.categoryList[this.currIndex].miniWallkey, 'pop');
+        // 右侧内容回到顶部
+        this.$refs.scroll.scrollTo(0, 0, 0)
       },
       tabClicked(index) {
         const typeList = ['pop', 'new', 'sell'];
